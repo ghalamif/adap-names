@@ -46,7 +46,7 @@ export class Coordinate {
 
     public compareDistance(other: Coordinate): number {
         let thisR = Math.hypot(this.getX(), this.getY());
-        let otherR = Math.hypot(this.getX(), this.getY());
+        let otherR = Math.hypot(other.getX(), other.getY());
         if (thisR == otherR) {
             return 0;
         } else if (thisR < otherR) {
@@ -83,4 +83,4 @@ export class Coordinate {
         return Math.hypot(deltaX, deltaY);
     }
 
- }
+}
