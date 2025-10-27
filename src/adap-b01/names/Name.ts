@@ -67,7 +67,7 @@ export class Name {
     /** Expects that new Name component c is properly masked */
     public insert(i: number, c: string): void {
        //throw new Error("needs implementation or deletion");
-       this.components.splice(i, 0, c);
+        this.components.splice(i, 0, c);
     }
 
     /** Expects that new Name component c is properly masked */
