@@ -19,6 +19,7 @@ export class Name {
     private components: string[] = [];
 
     /** Expects that all Name components are properly masked */
+    /** @methodtype initialization-method */
     constructor(other: string[], delimiter?: string) {
         //throw new Error("needs implementation or deletion");
         this.components = other;
@@ -32,6 +33,7 @@ export class Name {
      * Special characters are not escaped (creating a human-readable string)
      * Users can vary the delimiter character to be used
      */
+    /** @methodtype conversion-method */
     public asString(delimiter: string = this.delimiter): string {
        //throw new Error("needs implementation or deletion");
         return this.components.join(delimiter);
@@ -42,41 +44,48 @@ export class Name {
      * Machine-readable means that from a data string, a Name can be parsed back in
      * The special characters in the data string are the default characters
      */
+    /** @methodtype conversion-method */
     public asDataString(): string {
         //throw new Error("needs implementation or deletion");
         return this.components.join(ESCAPE_CHARACTER);
     }
 
     /** Returns properly masked component string */
+    /** @methodtype get-method */
     public getComponent(i: number): string {
         //throw new Error("needs implementation or deletion");
         return this.components[i];
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype set-method */
     public setComponent(i: number, c: string): void {
         //throw new Error("needs implementation or deletion");
         this.components[i] = c;
     }
 
      /** Returns number of components in Name instance */
+     /** @methodtype get-method */
     public getNoComponents(): number {
         //throw new Error("needs implementation or deletion");
         return this.components.length;
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype command-method */
     public insert(i: number, c: string): void {
        //throw new Error("needs implementation or deletion");
         this.components.splice(i, 0, c);
     }
 
     /** Expects that new Name component c is properly masked */
+    /** @methodtype command-method */
     public append(c: string): void {
         //throw new Error("needs implementation or deletion");
         this.components.push(c);
     }
 
+    /** @methodtype command-method */
     public remove(i: number): void {
         //throw new Error("needs implementation or deletion");
         this.components.splice(i, 1);
