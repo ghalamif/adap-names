@@ -47,7 +47,11 @@ export class Name {
     // @methodtype conversion-method 
     public asDataString(): string {
         //throw new Error("needs implementation or deletion");
-        return this.components.join(ESCAPE_CHARACTER);
+        const escapedComponents = this.components.map(c => c
+            .replaceAll(ESCAPE_CHARACTER, ESCAPE_CHARACTER + ESCAPE_CHARACTER)
+            .replaceAll(this.delimiter, ESCAPE_CHARACTER + this.delimiter)
+    );
+    return escapedComponents.join(this.delimiter);
     }
 
     /** Returns properly masked component string */
