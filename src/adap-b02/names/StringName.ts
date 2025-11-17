@@ -12,24 +12,26 @@ export class StringName implements Name {
     protected name: string = "";
     protected noComponents: number = 0;
 
-    constructor(source: string, delimiter: string = DEFAULT_DELIMITER) {
-        this.ensureDelimiter(delimiter);
-        this.delimiter = delimiter;
+    constructor(source: string, delimiter?: string) {
+        const d = delimiter ?? DEFAULT_DELIMITER;
+        this.ensureDelimiter(d);
+        this.delimiter = d;
         this.name = source;
-        this.parseComponents();  
+        this.noComponents = source.length === 0 ? 0 : this.splitComponents().length;
     }
 
     public asString(delimiter: string = this.delimiter): string {
         this.ensureDelimiter(delimiter);
-        const components = this.parseComponents();
-        if (components.length === 0) {
-            return "";
+        if (delimiter === this.delimiter) {
+            return this.name;
         }
+        const components = this.splitComponents();
         return components.join(delimiter);
     }
 
     public asDataString(): string {
-        return this.parseComponents()
+        const components = this.splitComponents();
+        return components
             .map(component => escapeComponentForDelimiter(component, DEFAULT_DELIMITER))
             .join(DEFAULT_DELIMITER);
     }
@@ -46,46 +48,58 @@ export class StringName implements Name {
         return this.noComponents;
     }
 
-    public getComponent(index: number): string {
-        const components = this.parseComponents();
-        this.ensureIndex(index, components.length);
-        return components[index];
+    public getComponent(n: number): string {
+        const components = this.splitComponents();
+        this.ensureIndex(n, components.length, false);
+        return components[n];
     }
 
-    public setComponent(index: number, value: string): void {
-        const components = this.parseComponents();
-        this.ensureIndex(index, components.length);
-        components[index] = value;
-        this.rebuildFromComponents(components);
+    public setComponent(n: number, c: string): void {
+        const components = this.splitComponents();
+        this.ensureIndex(n, components.length, false);
+        components[n] = c;
+        this.updateFromComponents(components);
     }
 
-    public insert(index: number, value: string): void {
-        const components = this.parseComponents();
-        this.ensureIndex(index, components.length, true);
-        components.splice(index, 0, value);
-        this.rebuildFromComponents(components);
+    public insert(n: number, c: string): void {
+        const components = this.splitComponents();
+        this.ensureIndex(n, components.length, true);
+        components.splice(n, 0, c);
+        this.updateFromComponents(components);
     }
 
-    public append(value: string): void {
-        const components = this.parseComponents();
-        components.push(value);
-        this.rebuildFromComponents(components);
+    public append(c: string): void {
+        const components = this.splitComponents();
+        components.push(c);
+        this.updateFromComponents(components);
     }
 
-    public remove(index: number): void {
-        const components = this.parseComponents();
-        this.ensureIndex(index, components.length);
-        components.splice(index, 1);
-        this.rebuildFromComponents(components);
+    public remove(n: number): void {
+        const components = this.splitComponents();
+        this.ensureIndex(n, components.length, false);
+        components.splice(n, 1);
+        this.updateFromComponents(components);
     }
 
     public concat(other: Name): void {
-        const components = this.parseComponents();
-        const otherLength = other.getNoComponents();
-        for (let i = 0; i < otherLength; i++) {
+        const components = this.splitComponents();
+        const otherLen = other.getNoComponents();
+        for (let i = 0; i < otherLen; i++) {
             components.push(other.getComponent(i));
         }
-        this.rebuildFromComponents(components);
+        this.updateFromComponents(components);
+    }
+
+    private splitComponents(): string[] {
+        if (this.name.length === 0) {
+            return [];
+        }
+        return this.name.split(this.delimiter);
+    }
+
+    private updateFromComponents(components: string[]): void {
+        this.name = components.join(this.delimiter);
+        this.noComponents = components.length;
     }
 
     private ensureDelimiter(delimiter: string): void {
@@ -94,7 +108,7 @@ export class StringName implements Name {
         }
     }
 
-    private ensureIndex(index: number, length: number, allowEqualEnd = false): void {
+    private ensureIndex(index: number, length: number, allowEqualEnd: boolean): void {
         if (index < 0) {
             throw new RangeError("index must be not a negtive number");
         }
@@ -107,49 +121,6 @@ export class StringName implements Name {
         if (index >= length) {
             throw new RangeError("index out of bonds");
         }
-    }
-
-    private parseComponents(): string[] {
-        if (this.name.length === 0) {
-            this.noComponents = 0;
-            return [];
-        }
-
-        const components: string[] = [];
-        let currentComponent = "";
-        let escapeActive = false;
-
-        for (const char of this.name) {
-            if (escapeActive) {
-                currentComponent += char;
-                escapeActive = false;
-                continue;
-            }
-            if (char === ESCAPE_CHARACTER) {
-                currentComponent += char;
-                escapeActive = true;
-                continue;
-            }
-            if (char === this.delimiter) {
-                components.push(currentComponent);
-                currentComponent = "";
-                continue;
-            }
-            currentComponent += char;
-        }
-
-        components.push(currentComponent);
-        this.noComponents = components.length;
-        return components;
-    }
-
-    private rebuildFromComponents(components: string[]): void {
-        this.noComponents = components.length;
-        if (components.length === 0) {
-            this.name = "";
-            return;
-        }
-        this.name = components.join(this.delimiter);
     }
 
 }
