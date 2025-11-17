@@ -11,9 +11,10 @@ export class StringArrayName implements Name {
     protected delimiter: string = DEFAULT_DELIMITER;
     protected components: string[] = [];
 
-    constructor(source: string[], delimiter: string = DEFAULT_DELIMITER) {
-        this.ensureDelimiter(delimiter);
-        this.delimiter = delimiter;
+    constructor(source: string[], delimiter?: string) {
+        const d = delimiter ?? DEFAULT_DELIMITER;
+        this.ensureDelimiter(d);
+        this.delimiter = d;
         this.components = [...source];
     }
 
