@@ -93,7 +93,9 @@ export abstract class AbstractName implements Name {
     abstract setComponent(i: number, c: string): void;
 
     abstract insert(i: number, c: string): void;
-    abstract append(c: string): void;
+    public append(c: string): void {
+        this.insert(this.getNoComponents(), c);
+    }
     abstract remove(i: number): void;
 
     public concat(other: Name): void {
@@ -106,6 +108,21 @@ export abstract class AbstractName implements Name {
     protected ensureDelimiter(delimiter: string): void {
         if (delimiter.length !== 1) {
             throw new Error("delimiter must be a single char");
+        }
+    }
+
+    protected ensureIndex(index: number, length: number, allowEqualEnd: boolean): void {
+        if (index < 0) {
+            throw new RangeError("index must not be negative");
+        }
+        if (allowEqualEnd) {
+            if (index > length) {
+                throw new RangeError("index out of bounds");
+            }
+            return;
+        }
+        if (index >= length) {
+            throw new RangeError("index out of bounds");
         }
     }
 

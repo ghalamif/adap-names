@@ -4,12 +4,10 @@ import { AbstractName } from "./AbstractName";
 export class StringName extends AbstractName {
 
     protected raw: string = "";
-    protected delimiter: string;
 
-    constructor(raw: string = "", delimiter: string = "/") {
+    constructor(raw: string = "", delimiter: string = DEFAULT_DELIMITER) {
         super(delimiter);
         this.raw = raw;
-        this.delimiter = delimiter;
     }
 
     // Utility helpers
@@ -105,10 +103,6 @@ export class StringName extends AbstractName {
         this.doInsert(i, c);
     }
 
-    public append(c: string): void {
-        this.doInsert(this.getNoComponents(), c);
-    }
-
     public remove(i: number): void {
         this.doRemove(i);
     }
@@ -117,18 +111,4 @@ export class StringName extends AbstractName {
         return new StringName(this.raw, this.delimiter);
     }
 
-    private ensureIndex(index: number, length: number, allowEqualEnd: boolean): void {
-        if (index < 0) {
-            throw new RangeError("index must not be negative");
-        }
-        if (allowEqualEnd) {
-            if (index > length) {
-                throw new RangeError("index out of bounds");
-            }
-        } else {
-            if (index >= length) {
-                throw new RangeError("index out of bounds");
-            }
-        }
-    }
 }
