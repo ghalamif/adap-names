@@ -1,6 +1,7 @@
-import { Node } from "./Node";
-import { Directory } from "./Directory";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { MethodFailedException } from "../common/MethodFailedException";
+import { Directory } from "./Directory";
+import { Node } from "./Node";
 
 enum FileState {
     OPEN,
@@ -17,16 +18,24 @@ export class File extends Node {
     }
 
     public open(): void {
-        // do something
+        IllegalArgumentException.assert(this.state === FileState.CLOSED, "file must be closed to open");
+        this.state = FileState.OPEN;
+        MethodFailedException.assert(this.state === FileState.OPEN, "file failed to open");
     }
 
     public read(noBytes: number): Int8Array {
-        // read something
-        return new Int8Array();
+        IllegalArgumentException.assert(Number.isInteger(noBytes), "number of bytes must be integer");
+        IllegalArgumentException.assert(noBytes >= 0, "number of bytes must be non-negative");
+        IllegalArgumentException.assert(this.state === FileState.OPEN, "file must be open to read");
+        const buffer = new Int8Array(noBytes);
+        MethodFailedException.assert(buffer.length === noBytes, "read failed to deliver requested bytes");
+        return buffer;
     }
 
     public close(): void {
-        // do something
+        IllegalArgumentException.assert(this.state === FileState.OPEN, "file must be open to close");
+        this.state = FileState.CLOSED;
+        MethodFailedException.assert(this.state === FileState.CLOSED, "file failed to close");
     }
 
     protected doGetFileState(): FileState {

@@ -1,4 +1,7 @@
-import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
+import { InvalidStateException } from "../common/InvalidStateException";
+import { MethodFailedException } from "../common/MethodFailedException";
+import { DEFAULT_DELIMITER } from "../common/Printable";
 import { Name } from "./Name";
 import { AbstractName } from "./AbstractName";
 
@@ -7,63 +10,60 @@ export class StringArrayName extends AbstractName {
     protected components: string[] = [];
 
     constructor(source: string[], delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+        super(delimiter ?? DEFAULT_DELIMITER);
+        IllegalArgumentException.assert(source !== null && source !== undefined, "components must be provided");
+        this.components = [...source];
+        this.assertClassInvariant();
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
+        return new StringArrayName([...this.components], this.delimiter);
     }
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        return this.components.length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        this.assertClassInvariant();
+        this.ensureIndex(i, this.components.length, false);
+        return this.components[i];
     }
 
-    public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    public setComponent(i: number, c: string): void {
+        this.assertValidComponentAsPrecondition(c);
+        this.assertClassInvariant();
+        this.ensureIndex(i, this.components.length, false);
+        this.components[i] = c;
+        this.assertClassInvariant();
     }
 
-    public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+    public insert(i: number, c: string): void {
+        this.assertValidComponentAsPrecondition(c);
+        this.assertClassInvariant();
+        this.ensureIndex(i, this.components.length, true);
+        this.components.splice(i, 0, c);
+        this.assertClassInvariant();
     }
 
-    public append(c: string) {
-        throw new Error("needs implementation or deletion");
+    public append(c: string): void {
+        const previousLength = this.components.length;
+        this.insert(previousLength, c);
+        MethodFailedException.assert(this.components.length === previousLength + 1, "append failed");
     }
 
-    public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+    public remove(i: number): void {
+        this.assertClassInvariant();
+        this.ensureIndex(i, this.components.length, false);
+        this.components.splice(i, 1);
+        this.assertClassInvariant();
     }
 
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
+    protected override assertClassInvariant(): void {
+        super.assertClassInvariant();
+        InvalidStateException.assert(
+            Number.isInteger(this.components.length) && this.components.length >= 0,
+            "component list length must be non-negative"
+        );
     }
 }
