@@ -60,18 +60,16 @@ function createBuggySetup(): RootNode {
 
 describe("Buggy setup test", () => {
   it("test finding files", () => {
-    let threwException: boolean = false;
+    let fs: RootNode = createBuggySetup();
     try {
-      let fs: RootNode = createBuggySetup();
       fs.findNodes("ls");
+      expect(true).toBe(false); // should not reach
     } catch(er) {
-      threwException = true;
-      // let ex: Exception = er as Exception;
-      // expect(ex).toBeInstanceOf(ServiceFailureException);
-      // expect(ex.hasTrigger()).toBe(true);
-      // let tx: Exception = ex.getTrigger();
-      // expect(tx).toBeInstanceOf(InvalidStateException);
+      let ex: Exception = er as Exception;
+      expect(ex).toBeInstanceOf(ServiceFailureException);
+      expect(ex.hasTrigger()).toBe(true);
+      let tx: Exception = ex.getTrigger();
+      expect(tx).toBeInstanceOf(InvalidStateException);
     }
-    expect(threwException).toBe(true);
   });
 });
